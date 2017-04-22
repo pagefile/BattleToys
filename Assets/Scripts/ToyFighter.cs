@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ToyFighter : MonoBehaviour {
-
+    // Editor Variables
     [SerializeField]
     private float MaxThrust = 500.0f;
 
@@ -22,6 +22,18 @@ public class ToyFighter : MonoBehaviour {
     [SerializeField]
     private float MinThrottle = 0.3f;           // The slowest the fighter is allowed to fly
 
+    // I don't really like it, but these game objects are used as positional spawns for projectiles. It works. Dunno if there's a better method. I bet there is
+    [SerializeField]
+    private Transform GunPort1;                // bleh
+    [SerializeField]
+    private Transform GunPort2;                // bleh 2: Return of bleh
+
+    [SerializeField]
+    float GunCycleRate = 0.5f;               // How many seconds it takes before it's ready to fire again
+
+    [SerializeField]
+    Projectile GunProjectile;
+
     // internal variables
     private float maxSpeed = 0.0f;              // Used for determining angular drag
     private float throttleRate = 0.3f;           // How fast the throttle changes with input
@@ -31,6 +43,8 @@ public class ToyFighter : MonoBehaviour {
     private float pitch = 0.0f;
     private float yaw = 0.0f;
     private float roll = 0.0f;
+    private float gunCycleTime = 0.0f;
+    private bool gunFire = false;
 
     // This is so hacky, but I want to get things working first. I'd have things like player input and
     // the shooty bits in their own classes and what not but I just want to get it all done first
@@ -52,6 +66,14 @@ public class ToyFighter : MonoBehaviour {
         pitch = Input.GetAxis("Pitch") + Input.GetAxis("Axis Pitch");
         yaw = Input.GetAxis("Yaw");
         roll = -Input.GetAxis("Roll") + -Input.GetAxis("Axis Roll");
+        if(gunCycleTime < 0.0f && Input.GetAxis("Primary Fire") > 0.0f)
+        {
+            gunCycleTime = GunCycleRate;
+            gunFire = true;
+        }
+
+        // Process systems
+        gunCycleTime -= Time.deltaTime;
 
         // Process input
         throttle += throttleChange * Time.deltaTime;
@@ -72,13 +94,23 @@ public class ToyFighter : MonoBehaviour {
             // Unlikely, but it's good to check
             speedAngleScalar = 1 - ((currentSpeed / maxSpeed) * SpeedAngularReduction);
         }
-        //Debug.Log("Calculated Max Speed: " + maxSpeed + "; Curren Speed: " + currentSpeed);
-        Debug.Log("Speed Angle Scalar = " + speedAngleScalar);
-        //rBody.angularDrag = speedDrag; // This should be a scalar on the torque so I can use drag to controll steering
 
         // Apply thrust
         float effectiveThrottle = ((1.0f - MinThrottle) * throttle) + MinThrottle;
         rBody.AddRelativeForce(Vector3.forward * effectiveThrottle * MaxThrust);
+
+        // Shoot guns
+        if(gunFire)
+        {
+            gunFire = false;
+            // Why not a static function though? Does TransformPoint do anything to the transform you call it on?
+            Vector3 port1Pos = transform.TransformPoint(GunPort1.position);
+            Vector3 port2Pos = transform.TransformPoint(GunPort2.position);
+            Projectile one = Instantiate(GunProjectile, GunPort1.position, rBody.transform.rotation);
+            Projectile two = Instantiate(GunProjectile, GunPort2.position, rBody.transform.rotation);
+            one.InheritVelocity = rBody.velocity;
+            two.InheritVelocity = rBody.velocity;
+        }
 
         // Apply turning torque
         rBody.AddRelativeTorque(Vector3.forward * RollTorque * roll * speedAngleScalar);
