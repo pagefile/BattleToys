@@ -38,7 +38,14 @@ public class Projectile : MonoBehaviour {
     void OnCollisionEnter(Collision col)
     {
         Rigidbody rBody = GetComponent<Rigidbody>();
-        
         rBody.useGravity = true;
+
+        // Check to see if it's something that can damage
+        Destructable dest = col.gameObject.GetComponent<Destructable>();
+        if(dest == null)
+        {
+            return;
+        }
+        dest.DoDamage(Damage);
     }
 }
