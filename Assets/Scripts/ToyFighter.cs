@@ -36,7 +36,7 @@ public class ToyFighter : MonoBehaviour {
 
     // internal variables
     private float maxSpeed = 0.0f;              // Used for determining angular drag
-    private float throttleRate = 0.3f;           // How fast the throttle changes with input
+    private float throttleRate = 0.3f;           // How fast the throttle changes with input...I feel like this should be an editor value...?
 
     // Control variables
     private float throttle = 0.0f;              // Scaled with thrust to make the jet go
@@ -76,7 +76,7 @@ public class ToyFighter : MonoBehaviour {
         gunCycleTime -= Time.deltaTime;
 
         // Process input
-        throttle += throttleChange * Time.deltaTime;
+        throttle += throttleChange * throttleRate * Time.deltaTime;
         throttle = Mathf.Clamp(throttle, 0.0f, 1.0f);
 	}
 
@@ -104,8 +104,6 @@ public class ToyFighter : MonoBehaviour {
         {
             gunFire = false;
             // Why not a static function though? Does TransformPoint do anything to the transform you call it on?
-            Vector3 port1Pos = transform.TransformPoint(GunPort1.position);
-            Vector3 port2Pos = transform.TransformPoint(GunPort2.position);
             Projectile one = Instantiate(GunProjectile, GunPort1.position, rBody.transform.rotation);
             Projectile two = Instantiate(GunProjectile, GunPort2.position, rBody.transform.rotation);
             one.InheritVelocity = rBody.velocity;
