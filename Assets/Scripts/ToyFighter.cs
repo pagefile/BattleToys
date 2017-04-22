@@ -32,6 +32,9 @@ public class ToyFighter : MonoBehaviour {
     private float yaw = 0.0f;
     private float roll = 0.0f;
 
+    // This is so hacky, but I want to get things working first. I'd have things like player input and
+    // the shooty bits in their own classes and what not but I just want to get it all done first
+
 	// Use this for initialization
 	void Start () 
     {
