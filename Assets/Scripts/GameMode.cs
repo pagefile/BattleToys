@@ -25,7 +25,7 @@ public class GameMode : MonoBehaviour {
 		if(StatusText)
         {
             float speed = Player.GetComponent<Rigidbody>().velocity.magnitude;
-            StatusText.text = "Speed: " + speed;
+            StatusText.text = "Speed: " + speed.ToString("0.00");
         }
 	}
 }
