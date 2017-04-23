@@ -37,6 +37,10 @@ public class Projectile : MonoBehaviour {
 
     void OnCollisionEnter(Collision col)
     {
+        if(dead)
+        {
+            return;
+        }
         Rigidbody rBody = GetComponent<Rigidbody>();
         rBody.useGravity = true;
 
@@ -47,5 +51,6 @@ public class Projectile : MonoBehaviour {
             return;
         }
         dest.DoDamage(Damage);
+        dead = true;
     }
 }
