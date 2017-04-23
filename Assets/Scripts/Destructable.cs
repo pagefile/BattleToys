@@ -8,17 +8,25 @@ using UnityEngine;
 public class Destructable : MonoBehaviour
 {
     [SerializeField]
-    float Health = 100.0f;
+    float MaxHealth = 100.0f;
 
     [SerializeField]
-    float PersistAfterDeath = 0.0f;         // How many seconds after death the game object should remain
+    private float PersistAfterDeath = 0.0f;         // How many seconds after death the game object should remain
 
+    // Internal
+    private float Health;
+
+    public float CurrentHealth
+    {
+        get { return Health; }
+        private set { }
+    }
     // Something about an explosion effect here......later
 
 	// Use this for initialization
 	void Start ()
     {
-		
+        Health = MaxHealth;
 	}
 	
 	// Update is called once per frame
@@ -39,5 +47,10 @@ public class Destructable : MonoBehaviour
             // TODO: I feel like the game mode or something should really be notified of this object's death
             // It seems important.
         }
+    }
+
+    public void Heal(float heal)
+    {
+        Health = Mathf.Clamp(Health + heal, Health, MaxHealth);
     }
 }
