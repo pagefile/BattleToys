@@ -3,29 +3,65 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 
-public class GameMode : MonoBehaviour {
-
+// I need to change either how this handles the objectives or how DestroyObjective works, since currently
+// the DestroyObjective component is destroyed with the object. Not the best thing to do
+public class GameMode : MonoBehaviour
+{
     [SerializeField]
-    private Text StatusText;
+    List<Objective> ObjectiveList;
 
-    // HACK: The player should be spawned by the game mode and kept track of that way....
-    // But this way is easier...and gross
-    [SerializeField]
-    ToyFighter Player;
+    // HACK: quick and dirty. Like a hobo
+    static private GameMode _instance = null;
+    static public GameMode Instance
+    {
+        get { return _instance; }
+        private set { }
+    }
+
+    // Internal
+    int totalCriticalSuccess = 0; // HACK: Hackish, but not nearly as much as what I had before
+    int currentCirticalSuccess = 0;
 
 	// Use this for initialization
 	void Start ()
     {
-		
+		if(_instance == null)
+        {
+            // It gets the job done...
+            _instance = this;
+        }
+
+        // Listen to objective events
+        for(int i = 0; i < ObjectiveList.Count; i++)
+        {
+            Objective obj = ObjectiveList[i];
+            if (obj.IsCritical)
+            {
+                totalCriticalSuccess++;
+            }
+            obj.UpdateObjective += UpdateObjective;
+        }
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-		if(StatusText)
+        // HACK: Let player quit without resorting to alt-f4
+        if(Input.GetKey("escape"))
         {
-            float speed = Player.GetComponent<Rigidbody>().velocity.magnitude;
-            StatusText.text = "Speed: " + speed.ToString("0.00");
+            Application.Quit();
         }
 	}
+
+    public void UpdateObjective(Objective obj, Objective.State state)
+    {
+        if(state == Objective.State.Success && obj.IsCritical)
+        {
+            currentCirticalSuccess++;
+        }
+        if(currentCirticalSuccess == totalCriticalSuccess)
+        {
+            Debug.Log("You win!");
+        }
+    }
 }

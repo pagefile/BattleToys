@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 // This whole idea could be a lot more sophisticated. It could cause object deltion or a state change
 // I don't have a lot of time though so it's just gonna kill the object. If I finish the core earlier
@@ -43,9 +44,10 @@ public class Destructable : MonoBehaviour
         if(Health <= 0)
         {
             // Uhm...nothing fancy I guess
-            Destroy(gameObject, PersistAfterDeath);
+            Destroy(gameObject, PersistAfterDeath < 0.1f ? 0.1f : PersistAfterDeath);
             // TODO: I feel like the game mode or something should really be notified of this object's death
             // It seems important.
+            ExecuteEvents.Execute<IDestroyedEventTarget>(gameObject, null, (x, y) => x.OnDestroyed());
         }
     }
 
