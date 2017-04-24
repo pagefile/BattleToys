@@ -46,7 +46,11 @@ public class GameMode : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        
+        // HACK: Let player quit without resorting to alt-f4
+        if(Input.GetKey("escape"))
+        {
+            Application.Quit();
+        }
 	}
 
     public void UpdateObjective(Objective obj, Objective.State state)
