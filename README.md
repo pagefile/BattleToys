@@ -1,7 +1,12 @@
 ## Battle Toys
 
 My game for Ludum Dare 38 with the theme "Small World". Made in Unity using Blender and Photoshop for all of my programmer art needs.
-This branch will remain as is for the purposes of submission to the Ludum Dare 38 game jam, possibly with minor updates to this readme.
+
+
+## PostDev ##
+
+This branch will be updated until the game reaches a more complete state, more what I had originally intended for LD38, maybe more.
+If it becomes something more than that I'll likely start a new repo for it.
 
 ## Art
 
