@@ -72,11 +72,6 @@ public class ToyFighter : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        // Read input
-        // It's just easier to combine it all
-        //pitch = Input.GetAxis("Pitch") + Input.GetAxis("Axis Pitch");
-        //yaw = Input.GetAxis("Yaw");
-        //roll = -Input.GetAxis("Roll") + -Input.GetAxis("Axis Roll");
         if(triggerDown && gunCycleTime < 0.0f)
         {
             gunCycleTime = GunCycleRate;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class PlayerInput : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
 
     // HACK: Kinda hacky, but it'll work for now. I just want to decouple the Input manager
