@@ -39,11 +39,13 @@ public class ToyFighter : MonoBehaviour {
     private float throttleRate = 0.3f;           // How fast the throttle changes with input...I feel like this should be an editor value...?
 
     // Control variables
+    private float throttleChange = 0.0f;
     private float throttle = 0.0f;              // Scaled with thrust to make the jet go
     private float pitch = 0.0f;
     private float yaw = 0.0f;
     private float roll = 0.0f;
     private float gunCycleTime = 0.0f;
+    private bool triggerDown = false;
     private bool gunFire = false;
 
     // This is so hacky, but I want to get things working first. I'd have things like player input and
@@ -55,6 +57,16 @@ public class ToyFighter : MonoBehaviour {
         Rigidbody rBody = GetComponent<Rigidbody>();
         rBody.useGravity = false;
         maxSpeed = MaxThrust / rBody.mass / rBody.drag;     // I have no idea if this works. It just seems workable
+
+        InputComponent input = GetComponent<InputComponent>();
+        if(input != null)
+        {
+            input.BindInput("Pitch", SetPitch);
+            input.BindInput("Yaw", SetYaw);
+            input.BindInput("Roll", SetRoll);
+            input.BindInput("Primary Fire", TriggerDown);
+            input.BindInput("Throttle", ThrottleChanged);
+        }
 	}
 	
 	// Update is called once per frame
@@ -62,11 +74,10 @@ public class ToyFighter : MonoBehaviour {
     {
         // Read input
         // It's just easier to combine it all
-        float throttleChange = Input.GetAxis("Throttle");
-        pitch = Input.GetAxis("Pitch") + Input.GetAxis("Axis Pitch");
-        yaw = Input.GetAxis("Yaw");
-        roll = -Input.GetAxis("Roll") + -Input.GetAxis("Axis Roll");
-        if(gunCycleTime < 0.0f && Input.GetAxis("Primary Fire") > 0.0f)
+        //pitch = Input.GetAxis("Pitch") + Input.GetAxis("Axis Pitch");
+        //yaw = Input.GetAxis("Yaw");
+        //roll = -Input.GetAxis("Roll") + -Input.GetAxis("Axis Roll");
+        if(triggerDown && gunCycleTime < 0.0f)
         {
             gunCycleTime = GunCycleRate;
             gunFire = true;
@@ -114,5 +125,31 @@ public class ToyFighter : MonoBehaviour {
         rBody.AddRelativeTorque(Vector3.forward * RollTorque * roll * speedAngleScalar);
         rBody.AddRelativeTorque(Vector3.right * PitchTorque * pitch * speedAngleScalar);
         rBody.AddRelativeTorque(Vector3.up * YawTorque * yaw * speedAngleScalar);
+    }
+
+    // Input
+    public void SetPitch(float val)
+    {
+        pitch = val;
+    }
+
+    public void SetYaw(float val)
+    {
+        yaw = val;
+    }
+
+    public void SetRoll(float val)
+    {
+        roll = val;
+    }
+
+    public void TriggerDown(bool val)
+    {
+        triggerDown = val;
+    }
+
+    public void ThrottleChanged(float val)
+    {
+        throttleChange = val;
     }
 }
