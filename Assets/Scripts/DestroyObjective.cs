@@ -28,6 +28,7 @@ public class DestroyObjective : Objective, IDestroyedEventTarget
     // IDestroyedEventTarget
     public void OnDestroyed()
     {
+        // The name of this function is dangerously close to the Monobehavior function OnDestroy()
         OnUpdateObjective(Objective.State.Success);
     }
 }
