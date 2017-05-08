@@ -2,10 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Input component to put on any game object that uses any kind of input for it's behavior
+// Not just for controllers. Network, AI, whatever. It's to decouple the game object
+// from the controller logic.
 public class InputComponent : MonoBehaviour
 {
     public delegate void AxisBinding(float input);
     public delegate void ButtonBinding(bool input);
+    // TODO: Add a binding for button state change (ie OnButtonDown, OnButtonUp)
+
 
     // Dictionaries for storing delgates
     private Dictionary<string, AxisBinding> AxisInputs = new Dictionary<string, AxisBinding>();

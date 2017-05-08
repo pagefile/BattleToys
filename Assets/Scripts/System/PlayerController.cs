@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
         // For now it only cares about the fighter stuff
-        Target.ExecuteInput("Throttle", Input.GetAxis("Throttle"));
+        Target.ExecuteInput("Boost", Input.GetButton("Boost"));
         Target.ExecuteInput("Pitch", Input.GetAxis("Pitch") + Input.GetAxis("Axis Pitch"));
         Target.ExecuteInput("Roll", -Input.GetAxis("Roll") + -Input.GetAxis("Axis Roll"));
         Target.ExecuteInput("Yaw", Input.GetAxis("Yaw"));

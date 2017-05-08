@@ -5,7 +5,10 @@ using UnityEngine;
 public class ToyFighter : MonoBehaviour {
     // Editor Variables
     [SerializeField]
-    private float MaxThrust = 500.0f;
+    private float Thrust = 500.0f;
+
+    [SerializeField]
+    private float BoostThrust = 500.0f;
 
     [SerializeField]
     private float RollTorque = 10.0f;
@@ -18,9 +21,6 @@ public class ToyFighter : MonoBehaviour {
 
     [SerializeField]
     private float SpeedAngularReduction = 0.3f;       // How much drag at max speed is applied
-
-    [SerializeField]
-    private float MinThrottle = 0.3f;           // The slowest the fighter is allowed to fly
 
     // I don't really like it, but these game objects are used as positional spawns for projectiles. It works. Dunno if there's a better method. I bet there is
     [SerializeField]
@@ -36,7 +36,6 @@ public class ToyFighter : MonoBehaviour {
 
     // internal variables
     private float maxSpeed = 0.0f;              // Used for determining angular drag
-    private float throttleRate = 0.3f;           // How fast the throttle changes with input...I feel like this should be an editor value...?
 
     // Control variables
     private float throttleChange = 0.0f;
@@ -47,6 +46,7 @@ public class ToyFighter : MonoBehaviour {
     private float gunCycleTime = 0.0f;
     private bool triggerDown = false;
     private bool gunFire = false;
+    private bool boosting = false;
 
     // This is so hacky, but I want to get things working first. I'd have things like player input and
     // the shooty bits in their own classes and what not but I just want to get it all done first
@@ -56,7 +56,7 @@ public class ToyFighter : MonoBehaviour {
     {
         Rigidbody rBody = GetComponent<Rigidbody>();
         rBody.useGravity = false;
-        maxSpeed = MaxThrust / rBody.mass / rBody.drag;     // I have no idea if this works. It just seems workable
+        maxSpeed = BoostThrust / rBody.mass / rBody.drag;     // I have no idea if this works. It just seems workable
 
         InputComponent input = GetComponent<InputComponent>();
         if(input != null)
@@ -65,7 +65,7 @@ public class ToyFighter : MonoBehaviour {
             input.BindInput("Yaw", SetYaw);
             input.BindInput("Roll", SetRoll);
             input.BindInput("Primary Fire", TriggerDown);
-            input.BindInput("Throttle", ThrottleChanged);
+            input.BindInput("Boost", Boosting);
         }
 	}
 	
@@ -80,10 +80,6 @@ public class ToyFighter : MonoBehaviour {
 
         // Process systems
         gunCycleTime -= Time.deltaTime;
-
-        // Process input
-        throttle += throttleChange * throttleRate * Time.deltaTime;
-        throttle = Mathf.Clamp(throttle, 0.0f, 1.0f);
 	}
 
     void FixedUpdate()
@@ -95,15 +91,21 @@ public class ToyFighter : MonoBehaviour {
         // Don't wanna end up accidentally extrapolating
         currentSpeed = Mathf.Min(maxSpeed, currentSpeed);
         float speedAngleScalar = 0.0f;
+        float currentThrust = Thrust;
+
         if(currentSpeed != 0.0f)
         {
             // Unlikely, but it's good to check
             speedAngleScalar = 1 - ((currentSpeed / maxSpeed) * SpeedAngularReduction);
         }
 
+        if(boosting)
+        {
+            currentThrust = BoostThrust;
+        }
+
         // Apply thrust
-        float effectiveThrottle = ((1.0f - MinThrottle) * throttle) + MinThrottle;
-        rBody.AddRelativeForce(Vector3.forward * effectiveThrottle * MaxThrust);
+        rBody.AddRelativeForce(Vector3.forward * currentThrust);
 
         // Shoot guns
         if(gunFire)
@@ -146,5 +148,10 @@ public class ToyFighter : MonoBehaviour {
     public void ThrottleChanged(float val)
     {
         throttleChange = val;
+    }
+
+    public void Boosting(bool val)
+    {
+        boosting = val;
     }
 }
