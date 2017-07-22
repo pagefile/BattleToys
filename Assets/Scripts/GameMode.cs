@@ -55,13 +55,41 @@ public class GameMode : MonoBehaviour
 
     public void UpdateObjective(Objective obj, Objective.State state)
     {
-        if(state == Objective.State.Success && obj.IsCritical)
-        {
-            currentCirticalSuccess++;
-        }
-        if(currentCirticalSuccess == totalCriticalSuccess)
+        if (CheckCriticalObjectives() == Objective.State.Success)
         {
             Debug.Log("You win!");
         }
+    }
+
+    // Check to see if mission objectives are met
+    // Returns objective state enum
+    // Active - Game is still ongoing
+    // Success - Critical objectives complete. Win state
+    // Failure - Critical objectives failed. Lose state
+    private Objective.State CheckCriticalObjectives()
+    {
+        bool active = false;
+        for(int i = 0; i < ObjectiveList.Count; i++)
+        {
+            Objective obj = ObjectiveList[i];
+            if(obj.IsCritical)
+            {
+                if(obj.CurrentState == Objective.State.Failure)
+                {
+                    return Objective.State.Failure;
+                }   
+                else if(obj.CurrentState == Objective.State.Active)
+                {
+                    active = true;
+                }
+            }
+        }
+        // If the code gets here, no critical objective was failed. If there is still an
+        // active critical objective, the level isn't over yet
+        if(active)
+        {
+            return Objective.State.Active;
+        }
+        return Objective.State.Success;
     }
 }

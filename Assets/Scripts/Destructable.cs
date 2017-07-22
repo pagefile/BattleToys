@@ -45,8 +45,6 @@ public class Destructable : MonoBehaviour
         {
             // Uhm...nothing fancy I guess
             Destroy(gameObject, PersistAfterDeath < 0.1f ? 0.1f : PersistAfterDeath);
-            // TODO: I feel like the game mode or something should really be notified of this object's death
-            // It seems important.
             ExecuteEvents.Execute<IDestroyedEventTarget>(gameObject, null, (x, y) => x.OnDestroyed());
         }
     }
